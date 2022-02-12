@@ -32,10 +32,10 @@ namespace FileManager
                     Console.WriteLine("Нажмите любую клавишу ...");
                     page.ChangeDepth();
                 }
-                //catch (Exception ex)
-                //{
-                //    Console.WriteLine($"Ошибка: {ex}");
-                //}
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка вывода каталога: {ex}");
+                }
 
                 ConsoleKey key = Console.ReadKey(true).Key;
                 if (key == ConsoleKey.RightArrow)
@@ -49,8 +49,20 @@ namespace FileManager
                 else if (key == ConsoleKey.Spacebar)
                 {
                     Console.Write("Введите имя каталога:  ");
-                    currentDir = Path.Combine(currentDir, Console.ReadLine());
-                    page.NewPage(currentDir);
+                    string newDir = Path.Combine(currentDir, Console.ReadLine());
+                    if (Directory.Exists(newDir))
+                    {
+                        currentDir = newDir;
+                        page.NewPage(currentDir);
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.WriteLine($"Директория {newDir} не найдена.");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine("Нажмите любую клавишу ...");
+                        Console.ReadKey(true);
+                    }
                 }
                 else if (key == ConsoleKey.Backspace)
                 {
@@ -68,16 +80,21 @@ namespace FileManager
                     Console.Write("Введите команду:  ");
 
                     string fullUserCommand = Console.ReadLine();
-                    string userCommand = "";
-                    string userDir = "";
+                    string userDir;
+                    string userCommand;
                     try
                     {
-                        userCommand = Helper.userCommand(fullUserCommand);
-                        userDir = Helper.userDir(fullUserCommand);
+                        userCommand = Helper.UserCommand(fullUserCommand);
+                        userDir = Helper.UserDir(fullUserCommand);
                     }
                     catch
                     {
-                        
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.WriteLine("Введите корректный запрос.");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine("Нажмите любую клавишу ...");
+                        Console.ReadKey(true);
+                        continue;
                     }
                     Invoker command = new Invoker();
 
@@ -115,9 +132,11 @@ namespace FileManager
                     {
                         command.Execute();
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        Console.WriteLine($"Ошибка: {ex}");
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.WriteLine("Введите корректный запрос.");
+                        Console.ForegroundColor = ConsoleColor.White;
                     }
                     Console.WriteLine("\nНажмите любую клавишу ...");
                     page.ChangeInstr();

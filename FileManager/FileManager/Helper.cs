@@ -4,20 +4,17 @@ namespace FileManager
 {
     public static class Helper
     {
-        public static string userCommand(string fullUserCommand)
+        public static string UserCommand(string fullUserCommand)
         {
             string[] userCommands = fullUserCommand.Split(' ');
             if(userCommands[0] == "cr")
             {
                 return userCommands[0] + " " + userCommands[1];
             }
-            else
-            {
-                return userCommands[0];
-            }            
+            return userCommands[0];
         }
 
-        public static string userDir(string fullUserCommand)
+        public static string UserDir(string fullUserCommand)
         {
             string[] userCommands = fullUserCommand.Split(' ');
             string lastStr = "";
@@ -30,14 +27,12 @@ namespace FileManager
                 }
                 return lastStr.Substring(0, lastStr.Length - 1);
             }
-            else
+
+            for (int i = 1; i < userCommands.Length; i++)
             {
-                for (int i = 1; i < userCommands.Length; i++)
-                {
-                    lastStr += userCommands[i] + " ";
-                }
-                return lastStr.Substring(0, lastStr.Length - 1);
+                lastStr += userCommands[i] + " ";
             }
+            return lastStr.Substring(0, lastStr.Length - 1);
         }
                 
         private static void GetAddressFileRecursive(string newAddress, ref int i)

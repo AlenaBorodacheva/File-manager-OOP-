@@ -3,21 +3,27 @@ using System.IO;
 
 namespace FileManager.Commands
 {
-    public class Find : ICommand
+    public class Find : Command
     {
-        private string userDir;
-        private string currentDir;        
-
         public Find(string userDir, string currentDir)
         {
-            this.userDir = userDir;
-            this.currentDir = currentDir;
+            UserDir = userDir;
+            CurrentDir = currentDir;
         }
 
-        public void Execute()
+        public override Result Execute()
         {
-            var files = Directory.GetFiles(currentDir, userDir, SearchOption.AllDirectories);
-            PrintFiles(files);
+            try
+            {
+                var files = Directory.GetFiles(CurrentDir, UserDir, SearchOption.AllDirectories);
+                PrintFiles(files);
+                return Result.Ok;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Console.WriteLine("Ошибка доступа.");
+                return Result.Exception;
+            }
         }
 
         private void PrintFiles(string[] files)

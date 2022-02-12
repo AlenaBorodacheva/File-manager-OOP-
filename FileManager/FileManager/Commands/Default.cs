@@ -2,9 +2,9 @@
 
 namespace FileManager.Commands
 {
-    public class Default : ICommand
+    public class Default : Command
     {
-        public void Execute()
+        public new void Execute()
         {
              Console.WriteLine("\nКоманда не найдена.");
         }

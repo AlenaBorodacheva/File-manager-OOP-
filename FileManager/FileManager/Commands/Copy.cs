@@ -4,40 +4,20 @@ using System.Linq;
 
 namespace FileManager.Commands
 {
-    public class Copy : ICommand
+    public class Copy : Command
     {
-        private string userDir;
-        private string currentDir;
-
         public Copy(string userDir, string currentDir)
         {
-            this.userDir = userDir;
-            this.currentDir = currentDir;
+            UserDir = userDir;
+            CurrentDir = currentDir;
         }
 
-        public void Execute()
+        public override Result Execute()
         {
-            string[] addresses = userDir.Split('>');
+            string[] addresses = UserDir.Split('>');
+            string fullAddress = addresses[0].Contains('\\') ? addresses[0] : Path.Combine(CurrentDir, addresses[0]);
+            string dir = addresses[1].Contains('\\') ? addresses[1] : Path.Combine(CurrentDir, addresses[1]);
 
-            string fullAddress;
-            if (addresses[0].Contains('\\'))
-            {
-                fullAddress = addresses[0];
-            }
-            else
-            {
-                fullAddress = Path.Combine(currentDir, addresses[0]);
-            }
-
-            string dir;
-            if (addresses[1].Contains('\\'))
-            {
-                dir = addresses[1];
-            }
-            else
-            {
-                dir = Path.Combine(currentDir, addresses[1]);
-            }
             string newAddress = dir + "\\" + addresses[0];
 
             if (File.Exists(fullAddress) && Directory.Exists(dir))
@@ -52,8 +32,10 @@ namespace FileManager.Commands
                     File.Copy(fullAddress, newAddressRecursive);
                 }
                 Console.WriteLine("Файл успешно скопирован.");
+                return Result.Ok;
             }
-            else if (Directory.Exists(fullAddress) && Directory.Exists(dir))
+
+            if (Directory.Exists(fullAddress) && Directory.Exists(dir))
             {
                 if (!Directory.Exists(newAddress))
                 {
@@ -67,11 +49,11 @@ namespace FileManager.Commands
                     CopyRecursive(fullAddress, newAddressRecursive);                    
                 }
                 Console.WriteLine("Каталог успешно скопирован.");
+                return Result.Ok;
             }
-            else
-            {
-                throw new Exception("Такого адреса не существует.");
-            }                
+
+            Console.WriteLine("Такого адреса не существует.");
+            return Result.Exception;
         }
         
         private void CopyRecursive(string addressDir, string newAddress)

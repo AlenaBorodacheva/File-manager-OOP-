@@ -1,33 +1,30 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 
 namespace FileManager.Commands
 {
-    public class CreateDir : ICommand
+    public class CreateDir : Command
     {
-        private string userDir;
-        private string currentDir;
-
         public CreateDir(string userDir, string currentDir)
         {
-            this.userDir = userDir;
-            this.currentDir = currentDir;
+            UserDir = userDir;
+            CurrentDir = currentDir;
         }
 
-        public void Execute()
+        public override Result Execute()
         {
-            string fullAddress;
-            if (userDir.Contains('\\'))
+            base.Execute();
+            try
             {
-                fullAddress = userDir;
+                Directory.CreateDirectory(FullAddress);
+                Console.WriteLine("Каталог успешно создан.");
+                return Result.Ok;
             }
-            else
+            catch (UnauthorizedAccessException)
             {
-                fullAddress = Path.Combine(currentDir, userDir);
+                Console.WriteLine("Ошибка доступа.");
+                return Result.Exception;
             }
-            Directory.CreateDirectory(fullAddress);
-            Console.WriteLine("Каталог успешно создан.");
         }
     }
 }

@@ -12,11 +12,8 @@ namespace FileManager
                 if (int.TryParse(_depth, out int depth) && depth > 0)
                 {
                     return depth;
-                }                    
-                else
-                {
-                    return 2;
-                }                    
+                }    
+                return 2;     
             }
         }
 
@@ -29,11 +26,8 @@ namespace FileManager
                 if (int.TryParse(_countStr, out int countStr) && countStr > 0)
                 {
                     return countStr;
-                }                    
-                else
-                {
-                    return 15;
-                }                    
+                }   
+                return 15;      
             }
         }
 
@@ -50,11 +44,8 @@ namespace FileManager
                         return 65;
                     }    
                     return maxHor;
-                }                    
-                else
-                {
-                    return 150;
-                }                   
+                }    
+                return 150;  
             }
         }
 

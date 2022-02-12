@@ -1,60 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace FileManager.Commands
 {
-    public class StaticData : ICommand
+    public class StaticData : Command
     {
-        private string userDir;
-        private string currentDir;        
-
         public StaticData(string userDir, string currentDir)
         {
-            this.userDir = userDir;
-            this.currentDir = currentDir;
+            UserDir = userDir;
+            CurrentDir = currentDir;
         }
 
-        public void Execute()
+        public override Result Execute()
         {
-            string fullAddress;
-            if (userDir.Contains('\\'))
+            base.Execute();
+            try
             {
-                fullAddress = userDir;
-            }
-            else
-            {
-                fullAddress = Path.Combine(currentDir, userDir);
-            }
-            string extension = Path.GetExtension(fullAddress);
+                string extension = Path.GetExtension(FullAddress);
 
-            if(File.Exists(fullAddress) && extension == ".txt")
-            {
-                List<string> text = new List<string>();
-                StreamReader sr = new StreamReader(fullAddress);
-
-                while (sr.EndOfStream != true)
+                if (File.Exists(FullAddress) && extension == ".txt")
                 {
-                    text.Add(sr.ReadLine());
+                    List<string> text = new List<string>();
+                    StreamReader sr = new StreamReader(FullAddress);
+
+                    while (sr.EndOfStream != true)
+                    {
+                        text.Add(sr.ReadLine());
+                    }
+                    sr.Close();
+
+                    int wordCount = GetWordCount(text);
+                    int lineCount = GetLineCount(text);
+                    int paragraphCount = GetParagraphCount(text);
+                    int symbolWithSpaceCount = GetSymbolWithSpaceCount(text);
+                    int symbolWithoutSpaceCount = GetSymbolWithoutSpaceCount(text);
+
+                    MyConsoleColor("\nКоличество слов: ", wordCount.ToString());
+                    MyConsoleColor("Количество строк: ", lineCount.ToString());
+                    MyConsoleColor("Количество абзацев: ", paragraphCount.ToString());
+                    MyConsoleColor("Количество символов с пробелами: ", symbolWithSpaceCount.ToString());
+                    MyConsoleColor("Количество символов без пробелов: ", symbolWithoutSpaceCount.ToString());
+                    return Result.Ok;
                 }
-                sr.Close();
 
-                int wordCount = GetWordCount(text);
-                int lineCount = GetLineCount(text);
-                int paragraphCount = GetParagraphCount(text);
-                int symbolWithSpaceCount = GetSymbolWithSpaceCount(text);
-                int symbolWithoutSpaceCount = GetSymbolWithoutSpaceCount(text);
-
-                MyConsoleColor("\nКоличество слов: ", wordCount.ToString());
-                MyConsoleColor("Количество строк: ", lineCount.ToString());
-                MyConsoleColor("Количество абзацев: ", paragraphCount.ToString());
-                MyConsoleColor("Количество символов с пробелами: ", symbolWithSpaceCount.ToString());
-                MyConsoleColor("Количество символов без пробелов: ", symbolWithoutSpaceCount.ToString());
-            }    
-            else
+                Console.WriteLine("Такого адреса не существует.");
+                return Result.Exception;
+            }
+            catch (UnauthorizedAccessException)
             {
-                throw new Exception("Такого адреса не существует.");
+                Console.WriteLine("Ошибка доступа.");
+                return Result.Exception;
             }
         }
 

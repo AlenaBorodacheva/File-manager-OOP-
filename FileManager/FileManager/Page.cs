@@ -88,14 +88,7 @@ namespace FileManager
 
         public void ChangeInstr()
         {
-            if(instr == instr1)
-            {
-                instr = instr2;
-            }
-            else
-            {
-                instr = instr1;
-            }
+            instr = instr == instr1 ? instr2 : instr1;
         }
 
         public void ChangeDepth()

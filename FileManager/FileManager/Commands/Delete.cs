@@ -3,64 +3,39 @@ using System.IO;
 
 namespace FileManager.Commands
 {
-    class Delete : ICommand
+    public class Delete : Command
     {
-        private string userDir;
-        private string currentDir;
-
         public Delete(string userDir, string currentDir)
         {
-            this.userDir = userDir;
-            this.currentDir = currentDir;
+            UserDir = userDir;
+            CurrentDir = currentDir;
         }
 
-        public void Execute()
+        public override Result Execute()
         {
-            string fullAddress;
-            if (userDir.Contains("\\"))
+            base.Execute();
+            try
             {
-                fullAddress = userDir;
-            }
-            else
-            {
-                fullAddress = Path.Combine(currentDir, userDir);
-            }
-            
-            if (File.Exists(fullAddress))       // существует ли файл
-            {
-                File.Delete(fullAddress);
-                Console.WriteLine("\nФайл успешно удален.");
-            }
-            else if (Directory.Exists(fullAddress))   // тогда существует ли каталог
-            {
-                DeleteDir(fullAddress);
-                Directory.Delete(fullAddress);
-                Console.WriteLine("\nКаталог успешно удален.");
-            }
-            else
-            {
-                throw new Exception("Такого адреса не существует.");
-            }            
-        }
-
-        private void DeleteDir(string fullAddress)
-        {
-            DirectoryInfo dir = new DirectoryInfo(fullAddress);
-            DirectoryInfo[] dirs = dir.GetDirectories();
-            FileInfo[] files = dir.GetFiles();
-
-            foreach (FileInfo f in files)
-            {
-                f.Delete();
-            }
-                
-            foreach (DirectoryInfo d in dirs)
-            {
-                DeleteDir(d.FullName);
-                if (d.GetDirectories().Length == 0 && d.GetFiles().Length == 0)
+                if (File.Exists(FullAddress))       // существует ли файл
                 {
-                    d.Delete();
-                }                    
+                    File.Delete(FullAddress);
+                    Console.WriteLine("\nФайл успешно удален.");
+                }
+                else if (Directory.Exists(FullAddress))   // тогда существует ли каталог
+                {
+                    Directory.Delete(FullAddress, true);
+                    Console.WriteLine("\nКаталог успешно удален.");
+                }
+                else
+                {
+                    throw new Exception("Такого адреса не существует.");
+                }
+                return Result.Ok;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Console.WriteLine("Ошибка доступа.");
+                return Result.Exception;
             }
         }
     }

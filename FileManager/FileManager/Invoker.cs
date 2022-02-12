@@ -2,9 +2,9 @@
 {
     public class Invoker
     {
-        ICommand command;
+        Command command;
 
-        public void SetCommand(ICommand com)
+        public void SetCommand(Command com)
         {
             command = com;
         }
